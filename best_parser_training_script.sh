@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-CUDA_VISIBLE_DEVICES=6 python src_joint/main.py train \
+python src_joint/main.py train \
  --model-path-base models/joint_xlnet_clean_large_3_layers_no_resdrop_lambda \
   --epochs 100 \
  --use-xlnet \

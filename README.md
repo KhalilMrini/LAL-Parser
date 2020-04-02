@@ -15,6 +15,7 @@ This is a PyTorch implementation of the parser described in ["Rethinking Self-At
 
 * Python 3.6 or higher.
 * The Python package requirements can be installed through the `requirements.sh` file.
+* Run `make` in ./EVALB. 
 
 ## Pre-trained models
 
