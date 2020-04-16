@@ -7,5 +7,10 @@ pip install pytorch_pretrained_bert==0.6.2
 pip install sentencepiece==0.1.83
 pip install tensorflow==2.0.0
 pip install tensorboard==2.0.0
-pip install nltk
+pip install nltk==3.5
+python3 -m nltk.downloader punkt averaged_perceptron_tagger
 pip install git+https://github.com/lanpa/tensorboardX
+
+# Download pre-trained model
+pip install gdown
+gdown https://drive.google.com/uc?id=1LC5iVcvgksQhNVJ-CbMigqXnPAaquiA2
