@@ -52,6 +52,37 @@ The output files of the command ``sh parse.sh`` are the following:
 * The file in the path in the ``--output-path-synlabel`` argument contains the dependency labels.
 * The file in the path in the ``--output-path-synconst`` argument contains the linearized constituency tree.
 
+Example running the inference code in a Python virtual environment:
+
+```
+mkdir neural-parser
+cd neural-parser
+virtualenv -p python3.6 ./pyenv/neural-parser
+source ./pyenv/neural-parser/bin/activate
+git clone https://github.com/KhalilMrini/LAL-Parser
+cd LAL-Parser/
+alias pip=pip3; source requirements.sh
+
+# Testing the Neural Adobe-UCSD Parser inference
+sh parse.sh
+```
+
+Example running the inference code in a Docker container:
+
+```
+docker run --interactive --tty ubuntu:18.04 bash
+apt update; apt install -y git nano wget htop python3 python3-pip unzip; git clone https://github.com/KhalilMrini/LAL-Parser
+cd LAL-Parser/
+alias pip=pip3; source requirements.sh
+apt-get install -y libhdf5-serial-dev=1.8.16+docs-4ubuntu1.1
+
+# Testing the Neural Adobe-UCSD Parser inference
+alias python=python3 
+source parse.sh
+```
+
+To generate a diagram of a parse tree based on the output `output_synconst_0.txt`, see [this list of tools to draw parse trees](https://stackoverflow.com/q/4972571/395857).
+
 ## Label Attention
 
 The implementation for the Label Attention Layer is in the Python Class `LabelAttention` in the file [`src_joint/KM_parser.py`](src_joint/KM_parser.py).
