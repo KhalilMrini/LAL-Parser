@@ -14,3 +14,9 @@ pip install git+https://github.com/lanpa/tensorboardX
 # Download pre-trained model
 pip install gdown
 gdown https://drive.google.com/uc?id=1LC5iVcvgksQhNVJ-CbMigqXnPAaquiA2
+
+# If you get a "Too many users have viewed or downloaded this file recently." error, 
+# run the following 3 lines to download pre-trained model from a mirror:
+# pip install internetarchive
+# ia download neuraladobe-ucsdparser
+# mv neuraladobe-ucsdparser/best_parser.pt .
