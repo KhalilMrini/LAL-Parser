@@ -39,9 +39,14 @@ sh test.sh
 
 ## Inference
 
-To parse sentences, first place the sentences in the [input file](example_sentences.txt) and download a [pre-trained model](#Pre-trained-models) (or train it yourself), then run following command:
+To parse sentences, first place the sentences in the [input file](example_sentences.txt) and download a [pre-trained model](#Pre-trained-models) (or train it yourself), then run following command **to parse with a print of the head contributions**. A warning that the following **will be slow:**
 ```
 sh parse.sh
+```
+
+**For a quicker parsing, use the following command.** It does not compute head contributions:
+```
+sh parse_quick.sh
 ```
 
 Words should be POS-tagged before use. If your input is not tagged, it will be tagged for you by the program. If you prefer to use your own tagging, provide input as ``tag1_word1 tag2_word2`` and set the flag ``--pos-tag 0`` in the command line arguments.
