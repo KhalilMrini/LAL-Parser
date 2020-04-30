@@ -12,9 +12,9 @@ use_cuda = torch.cuda.is_available()
 if use_cuda:
     torch_t = torch.cuda
     def from_numpy(ndarray):
-        if float(sys.version[:3]) < 3.7:
+        try:
             return torch.from_numpy(ndarray).pin_memory().cuda(async=True)
-        else:
+        except:
             return torch.from_numpy(ndarray).pin_memory().cuda(non_blocking=True)
 else:
     print("Not using CUDA!")
