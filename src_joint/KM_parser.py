@@ -1,6 +1,7 @@
 import functools
 
 import numpy as np
+import sys
 
 import torch
 from torch.autograd import Variable
@@ -11,7 +12,10 @@ use_cuda = torch.cuda.is_available()
 if use_cuda:
     torch_t = torch.cuda
     def from_numpy(ndarray):
-        return torch.from_numpy(ndarray).pin_memory().cuda(async=True)
+        if sys.version.startswith('3.6'):
+            return torch.from_numpy(ndarray).pin_memory().cuda(async=True)
+        else:
+            return torch.from_numpy(ndarray).pin_memory().cuda(non_blocking=True)
 else:
     print("Not using CUDA!")
     torch_t = torch
@@ -33,6 +37,8 @@ UNK = "<UNK>"
 ROOT = "<START>"
 Sub_Head = "<H>"
 No_Head = "<N>"
+
+DTYPE = torch.uint8 if sys.version.startswith('3.6') else torch.bool
 
 TAG_UNK = "UNK"
 
@@ -331,7 +337,7 @@ class MultiHeadAttention(nn.Module):
         q_padded = q_s.new_zeros((n_head, mb_size, len_padded, d_k))
         k_padded = k_s.new_zeros((n_head, mb_size, len_padded, d_k))
         v_padded = v_s.new_zeros((n_head, mb_size, len_padded, d_v))
-        invalid_mask = q_s.new_ones((mb_size, len_padded), dtype=torch.uint8)
+        invalid_mask = q_s.new_ones((mb_size, len_padded), dtype=DTYPE)
 
         for i, (start, end) in enumerate(zip(batch_idxs.boundaries_np[:-1], batch_idxs.boundaries_np[1:])):
             q_padded[:,i,:end-start,:] = q_s[:,start:end,:]
@@ -983,7 +989,7 @@ class LabelAttention(nn.Module):
             q_padded = q_s.repeat(mb_size, 1, 1) # (d_l * mb_size) x 1 x d_k
         k_padded = k_s.new_zeros((n_head, mb_size, len_padded, d_k))
         v_padded = v_s.new_zeros((n_head, mb_size, len_padded, d_v))
-        invalid_mask = q_s.new_ones((mb_size, len_padded), dtype=torch.uint8)
+        invalid_mask = q_s.new_ones((mb_size, len_padded), dtype=DTYPE)
 
         for i, (start, end) in enumerate(zip(batch_idxs.boundaries_np[:-1], batch_idxs.boundaries_np[1:])):
             if self.q_as_matrix:
@@ -1638,9 +1644,7 @@ class ChartParser(nn.Module):
             features = all_encoder_layers[-1]
 
             if self.encoder is not None:
-                features_packed = features.masked_select(all_word_end_mask.to(torch.uint8).unsqueeze(-1)).reshape(-1,
-                                                                                                                  features.shape[
-                                                                                                                      -1])
+                features_packed = features.masked_select(all_word_end_mask.to(DTYPE).unsqueeze(-1)).reshape(-1,features.shape[-1])
 
                 # For now, just project the features from the last word piece in each word
                 extra_content_annotations = self.project_bert(features_packed)
@@ -1736,7 +1740,7 @@ class ChartParser(nn.Module):
             # features = all_encoder_layers[-1]
             features = transformer_outputs[0]
 
-            features_packed = features.masked_select(all_word_end_mask.to(torch.uint8).unsqueeze(-1)).reshape(-1,
+            features_packed = features.masked_select(all_word_end_mask.to(DTYPE).unsqueeze(-1)).reshape(-1,
                                                                                                               features.shape[
                                                                                                                   -1])
 
@@ -1779,8 +1783,8 @@ class ChartParser(nn.Module):
         else:
             assert self.bert is not None
             features = self.project_bert(features)
-            fencepost_annotations_start = features.masked_select(all_word_start_mask.to(torch.uint8).unsqueeze(-1)).reshape(-1, features.shape[-1])
-            fencepost_annotations_end = features.masked_select(all_word_end_mask.to(torch.uint8).unsqueeze(-1)).reshape(-1, features.shape[-1])
+            fencepost_annotations_start = features.masked_select(all_word_start_mask.to(DTYPE).unsqueeze(-1)).reshape(-1, features.shape[-1])
+            fencepost_annotations_end = features.masked_select(all_word_end_mask.to(DTYPE).unsqueeze(-1)).reshape(-1, features.shape[-1])
 
         fp_startpoints = batch_idxs.boundaries_np[:-1]
         fp_endpoints = batch_idxs.boundaries_np[1:] - 1
