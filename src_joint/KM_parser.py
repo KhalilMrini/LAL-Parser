@@ -7,14 +7,15 @@ import torch
 from torch.autograd import Variable
 import torch.nn as nn
 import torch.nn.init as init
+import transformers
 
 use_cuda = torch.cuda.is_available()
 if use_cuda:
     torch_t = torch.cuda
     def from_numpy(ndarray):
-        try:
-            return torch.from_numpy(ndarray).pin_memory().cuda(async=True)
-        except:
+        if float(sys.version[:3]) <= 3.6:
+            return eval('torch.from_numpy(ndarray).pin_memory().cuda(async=True)')
+        else:
             return torch.from_numpy(ndarray).pin_memory().cuda(non_blocking=True)
 else:
     print("Not using CUDA!")
@@ -680,7 +681,7 @@ def get_elmo_class():
 
 def get_xlnet(xlnet_model, xlnet_do_lower_case):
     # Avoid a hard dependency on BERT by only importing it if it's being used
-    from pytorch_transformers import (WEIGHTS_NAME, XLNetModel,
+    from transformers import (WEIGHTS_NAME, XLNetModel,
                                       XLMConfig, XLMForSequenceClassification,
                                       XLMTokenizer, XLNetConfig,
                                       XLNetForSequenceClassification,
@@ -692,7 +693,7 @@ def get_xlnet(xlnet_model, xlnet_do_lower_case):
 
 def get_roberta(roberta_model, roberta_do_lower_case):
     # Avoid a hard dependency on BERT by only importing it if it's being used
-    from pytorch_transformers import (WEIGHTS_NAME, RobertaModel,
+    from transformers import (WEIGHTS_NAME, RobertaModel,
                                       RobertaConfig,
                                       RobertaForSequenceClassification,
                                       RobertaTokenizer)
