@@ -10,6 +10,7 @@ pip install tensorboard==2.0.0
 pip install nltk==3.5
 python3 -m nltk.downloader punkt averaged_perceptron_tagger
 pip install git+https://github.com/lanpa/tensorboardX
+pip install transformers==2.8.0
 
 # Download pre-trained model
 pip install gdown
