@@ -654,11 +654,6 @@ def run_parse(args):
             dummy_tag = 'UNK'
         else:
             dummy_tag = parser.tag_vocab.value(0)
-        sentences = [[(dummy_tag, word) for word in word_tokenize(sentence)] for sentence in sentences]
-    elif args.pos_tag == 1:
-        sentences = [[(tag, word) for word, tag in nltk.pos_tag(word_tokenize(sentence))] for sentence in sentences]
-    else:
-        sentences = [[(word.split('_')[0], word.split('_')[1]) for word in sentence.split()] for sentence in sentences]
 
     def save_data(syntree_pred, cun):
         pred_head = [[leaf.father for leaf in tree.leaves()] for tree in syntree_pred]
@@ -684,9 +679,15 @@ def run_parse(args):
 
     syntree_pred = []
     cun = 0
-    for start_index in range(0, len(sentences), args.eval_batch_size):
+    for start_index in tqdm(range(0, len(sentences), args.eval_batch_size), desc='Parsing sentences'):
         subbatch_sentences = sentences[start_index:start_index+args.eval_batch_size]
-        syntree, _ = parser.parse_batch(subbatch_sentences)
+        if args.pos_tag == 2:
+            tagged_sentences = [[(dummy_tag, word) for word in word_tokenize(sentence)] for sentence in subbatch_sentences]
+        elif args.pos_tag == 1:
+            tagged_sentences = [[(tag, word) for word, tag in nltk.pos_tag(word_tokenize(sentence))] for sentence in subbatch_sentences]
+        else:
+            tagged_sentences = [[(word.split('_')[0], word.split('_')[1]) for word in sentence.split()] for sentence in subbatch_sentences]
+        syntree, _ = parser.parse_batch(tagged_sentences)
         syntree_pred.extend(syntree)
         if args.save_per_sentences <= len(syntree_pred) and args.save_per_sentences > 0:
             save_data(syntree_pred, cun)
