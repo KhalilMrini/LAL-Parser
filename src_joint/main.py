@@ -21,6 +21,7 @@ import json
 tokens = KM_parser
 import nltk
 from nltk import word_tokenize
+from tqdm import tqdm
 
 uid = uuid.uuid4().hex[:6]
 
