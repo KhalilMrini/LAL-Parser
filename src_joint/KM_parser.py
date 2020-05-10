@@ -541,6 +541,7 @@ class MultiLevelEmbedding(nn.Module):
         self.timing_dropout = FeatureDropout(timing_dropout)
 
         # Learned embeddings
+        self.max_len = max_len
         self.position_table = nn.Parameter(torch_t.FloatTensor(max_len, self.d_positional))
         init.normal_(self.position_table)
 
@@ -566,7 +567,16 @@ class MultiLevelEmbedding(nn.Module):
             else:
                 content_annotations += extra_content_annotations
 
-        timing_signal = torch.cat([self.position_table[:seq_len,:] for seq_len in batch_idxs.seq_lens_np], dim=0)
+        timing_signal = []
+        for seq_len in batch_idxs.seq_lens_np:
+            this_seq_len = seq_len
+            timing_signal.append(self.position_table[:this_seq_len,:])
+            this_seq_len -= self.max_len
+            while this_seq_len > 0:
+                timing_signal.append(self.position_table[:this_seq_len,:])
+                this_seq_len -= self.max_len
+
+        timing_signal = torch.cat(timing_signal, dim=0)
         timing_signal = self.timing_dropout(timing_signal, batch_idxs)
 
         # Combine the content and timing signals
