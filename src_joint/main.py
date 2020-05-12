@@ -25,6 +25,8 @@ from tqdm import tqdm
 
 uid = uuid.uuid4().hex[:6]
 
+REVERSE_TOKEN_MAPPING = dict([(value, key) for key, value in tokens.BERT_TOKEN_MAPPING.items()])
+
 def torch_load(load_path):
     if KM_parser.use_cuda:
         return torch.load(load_path)
@@ -683,11 +685,11 @@ def run_parse(args):
     for start_index in tqdm(range(0, len(sentences), args.eval_batch_size), desc='Parsing sentences'):
         subbatch_sentences = sentences[start_index:start_index+args.eval_batch_size]
         if args.pos_tag == 2:
-            tagged_sentences = [[(dummy_tag, word) for word in word_tokenize(sentence)] for sentence in subbatch_sentences]
+            tagged_sentences = [[(dummy_tag, REVERSE_TOKEN_MAPPING.get(word, word)) for word in word_tokenize(sentence)] for sentence in subbatch_sentences]
         elif args.pos_tag == 1:
-            tagged_sentences = [[(tag, word) for word, tag in nltk.pos_tag(word_tokenize(sentence))] for sentence in subbatch_sentences]
+            tagged_sentences = [[(REVERSE_TOKEN_MAPPING.get(tag, tag), REVERSE_TOKEN_MAPPING.get(word, word)) for word, tag in nltk.pos_tag(word_tokenize(sentence))] for sentence in subbatch_sentences]
         else:
-            tagged_sentences = [[(word.split('_')[0], word.split('_')[1]) for word in sentence.split()] for sentence in subbatch_sentences]
+            tagged_sentences = [[(REVERSE_TOKEN_MAPPING.get(word.split('_')[0],word.split('_')[0]), REVERSE_TOKEN_MAPPING.get(word.split('_')[1],word.split('_')[1])) for word in sentence.split()] for sentence in subbatch_sentences]
         syntree, _ = parser.parse_batch(tagged_sentences)
         syntree_pred.extend(syntree)
         if args.save_per_sentences <= len(syntree_pred) and args.save_per_sentences > 0:
