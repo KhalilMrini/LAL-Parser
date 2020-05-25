@@ -660,7 +660,7 @@ def run_parse(args):
             this_sentence = sub_sentences[0][:args.max_tokens]
             this_idx = 1
             move_on = False
-            while len(this_sentence) < args.max_tokens and not move_on:
+            while this_idx < len(sub_sentences) and len(this_sentence) < args.max_tokens and not move_on:
                 if len(sub_sentences[this_idx]) <= args.max_tokens - len(this_sentence):
                     this_sentence = this_sentence + sub_sentences[this_idx]
                 else:
