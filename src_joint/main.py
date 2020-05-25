@@ -20,7 +20,7 @@ import utils
 import json
 tokens = KM_parser
 import nltk
-from nltk import word_tokenize
+from nltk import word_tokenize, sent_tokenize
 from tqdm import tqdm
 
 uid = uuid.uuid4().hex[:6]
@@ -651,6 +651,24 @@ def run_parse(args):
     with open(args.input_path) as input_file:
         sentences = input_file.readlines()
 
+    sentences = [sentence.strip() for sentence in sentences if len(sentence.strip()) > 0]
+
+    if args.max_tokens > 0:
+        tmp = []
+        for sentence in sentences:
+            sub_sentences = [word_tokenize(sub_sentence) for sub_sentence in sent_tokenize(sentence)]
+            this_sentence = sub_sentences[0][:args.max_tokens]
+            this_idx = 1
+            move_on = False
+            while len(this_sentence) < args.max_tokens and not move_on:
+                if len(sub_sentences[this_idx]) <= args.max_tokens - len(this_sentence):
+                    this_sentence = this_sentence + sub_sentences[this_idx]
+                else:
+                    move_on = True
+                this_idx += 1
+            tmp.append(' '.join(this_sentence))
+        sentences = tmp
+
     if args.pos_tag == 2:
         # Parser does not do tagging, so use a dummy tag when parsing from raw text
         if 'UNK' in parser.tag_vocab.indices:
@@ -754,6 +772,7 @@ def main():
     subparser.add_argument("--pos-tag", type=int, default=1) # 1 to PoS-tag the input sentences, 2 for dummy tag
     subparser.add_argument("--embedding-path", default="data/glove.6B.100d.txt.gz")
     subparser.add_argument("--dataset", default="ptb")
+    subparser.add_argument("--max-tokens", type=int, default=-1)
     subparser.add_argument("--save-per-sentences", type=int, default=-1)
     subparser.add_argument("--input-path", type=str, required=True)
     subparser.add_argument("--output-path-synconst", type=str, default="-")
