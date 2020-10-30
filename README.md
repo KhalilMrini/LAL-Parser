@@ -1,6 +1,6 @@
 # Neural Adobe-UCSD Parser
 
-This is a PyTorch implementation of the parser described in **(Updated!)** ["Rethinking Self-Attention: Towards Interpretability in Neural Parsing" (Mrini et al., 2020)](https://arxiv.org/abs/1911.03875).
+This is a PyTorch implementation of the parser described in ["Rethinking Self-Attention: Towards Interpretability in Neural Parsing" (Mrini et al., 2020)](https://arxiv.org/abs/1911.03875), to appear at EMNLP 2020 Findings.
 
 ## Contents
 1. [Requirements](#Requirements)
