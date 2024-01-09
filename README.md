@@ -19,7 +19,7 @@ This is a PyTorch implementation of the parser described in ["Rethinking Self-At
 
 ## Pre-trained models
 
-Our best model is available for download [here](https://drive.google.com/file/d/1LC5iVcvgksQhNVJ-CbMigqXnPAaquiA2/view?usp=sharing). It uses XLNet embeddings, HSPG tree representation has 3 layers of self-attention and 1 final 128-dimensional Label Attention Layer with a position-wise feed-forward layer and no residual dropout. On the English Penn Treebank benchmark dataset, our best parser reaches 96.38 F1 score for Constituency Parsing, and 97.42 UAS and 96.26 LAS for Dependency Parsing.
+Our best model is available for download [here](https://drive.google.com/file/d/1LC5iVcvgksQhNVJ-CbMigqXnPAaquiA2/view?usp=sharing) ([mirror](https://archive.org/download/neuraladobe-ucsdparser)). It uses XLNet embeddings, HSPG tree representation has 3 layers of self-attention and 1 final 128-dimensional Label Attention Layer with a position-wise feed-forward layer and no residual dropout. On the English Penn Treebank benchmark dataset, our best parser reaches 96.38 F1 score for Constituency Parsing, and 97.42 UAS and 96.26 LAS for Dependency Parsing.
 
 Pre-trained BERT and XLNet weights will be automatically downloaded as needed by the `pytorch-transformers` package.
 
